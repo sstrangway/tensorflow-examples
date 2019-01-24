@@ -1,25 +1,12 @@
-const x_train = tf.tensor3d([
-    [[0,1,0],[1,0,0],[0,0,1], 
-     [0,1,0],[1,0,0],[1,0,0], 
-     [1,0,0],[1,0,0],[1,0,0]],
-    [[0,1,0],[0,1,0],[1,0,0], 
-     [1,0,0],[0,0,1],[1,0,0], 
-     [1,0,0],[1,0,0],[1,0,0]],
-    [[0,1,0],[1,0,0],[1,0,0], 
-     [1,0,0],[0,0,1],[1,0,0], 
-     [0,0,1],[1,0,0],[0,1,0]],
-    [[0,1,0],[0,0,1],[1,0,0], 
-     [0,0,1],[0,1,0],[1,0,0], 
-     [1,0,0],[1,0,0],[1,0,0]],
-    [[0,1,0],[0,0,1],[0,1,0], 
-     [1,0,0],[1,0,0],[1,0,0], 
-     [1,0,0],[0,0,1],[1,0,0]],
-    [[0,1,0],[0,0,1],[0,1,0], 
-     [1,0,0],[1,0,0],[0,0,1], 
-     [1,0,0],[1,0,0],[1,0,0]],
-    [[0,1,0],[1,0,0],[1,0,0], 
-     [1,0,0],[1,0,0],[0,0,1], 
-     [1,0,0],[1,0,0],[1,0,0]]
+console.log("hello");
+const x_train = tf.tensor2d([
+    [0,1,0,1,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0],
+    [0,1,0,0,1,0,1,0,0,1,0,0,0,0,1,1,0,0,1,0,0,1,0,0,1,0,0],
+    [0,1,0,1,0,0,1,0,0,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,1,0],
+    [0,1,0,0,0,1,1,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0],
+    [0,1,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,0,1,1,0,0],
+    [0,1,0,0,0,1,0,1,0,1,0,0,1,0,0,0,0,1,1,0,0,1,0,0,1,0,0],
+    [0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,0,1,1,0,0,1,0,0,1,0,0],
 ]);
 
 console.log(x_train);
@@ -45,7 +32,7 @@ const y_train = tf.tensor2d([
      0,0,0],
     [0,0,1, 
      0,0,0, 
-     0,0,0]
+     0,0,0],
 ]);
 console.log(y_train);
 console.log("Hello");
@@ -54,7 +41,7 @@ const model = tf.sequential();
 
 const hidden = tf.layers.dense({
     units: 9,
-    inputShape: [[9,3]],
+    inputShape: 27,
     activation: 'tanh'
 });
 model.add(hidden);
@@ -99,4 +86,26 @@ async function train() {
         const response = await model.fit(x_train, y_train, config);
         console.log(response.history.loss[0]);
     }
+}
+
+function predict() {
+    let value = document.getElementById('myInput').value;
+    console.log(value);
+
+    let tensorInput = [];
+    for(let i = 0; i < value.length; i ++){
+        if(value.charAt(i) === 'x'){
+            tensorInput.push(...[0,1,0]);
+        } 
+        if(value.charAt(i) === 'o'){
+            tensorInput.push(...[0,0,1]);
+        } 
+        if(value.charAt(i) === '_'){
+            tensorInput.push(...[1,0,0]);
+        } 
+    }
+    console.log(tensorInput);
+    x_test = tf.tensor2d([tensorInput]);
+    let outputs = model.predict(x_test);
+    outputs.print();
 }
