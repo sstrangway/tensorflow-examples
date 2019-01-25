@@ -1,4 +1,5 @@
 console.log("hello");
+
 const x_train = tf.tensor2d([
     [0,1,0,1,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0],
     [0,1,0,0,1,0,1,0,0,1,0,0,0,0,1,1,0,0,1,0,0,1,0,0,1,0,0],
@@ -70,7 +71,6 @@ model.compile({
     loss: tf.losses.meanSquaredError
 });
 
-
 train().then( () => {
     console.log("training complete");
     let outputs = model.predict(x_train);
@@ -82,7 +82,7 @@ async function train() {
         shuffle: true,
         // epoch: 10,
     }
-    for(let i = 0; i < 1000; i ++){
+    for(let i = 0; i < 100; i ++){
         const response = await model.fit(x_train, y_train, config);
         console.log(response.history.loss[0]);
     }
@@ -90,22 +90,24 @@ async function train() {
 
 function predict() {
     let value = document.getElementById('myInput').value;
-    console.log(value);
+    x_test = xosTo2DTensor(value);
+    let outputs = model.predict(x_test);
+    outputs.print();
+}
+
+function xosTo2DTensor(xos) {
 
     let tensorInput = [];
-    for(let i = 0; i < value.length; i ++){
-        if(value.charAt(i) === 'x'){
+    for(let i = 0; i < xos.length; i ++){
+        if(xos.charAt(i) === 'x'){
             tensorInput.push(...[0,1,0]);
         } 
-        if(value.charAt(i) === 'o'){
+        if(xos.charAt(i) === 'o'){
             tensorInput.push(...[0,0,1]);
         } 
-        if(value.charAt(i) === '_'){
+        if(xos.charAt(i) === '_'){
             tensorInput.push(...[1,0,0]);
         } 
     }
-    console.log(tensorInput);
-    x_test = tf.tensor2d([tensorInput]);
-    let outputs = model.predict(x_test);
-    outputs.print();
+    return tf.tensor2d([tensorInput]);;
 }
